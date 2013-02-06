@@ -19,8 +19,7 @@ void loop(){
 
 }
 
-bool getDistance(float *distance)
-{
+bool getDistance(float *distance){
 	float duration;
 
 	digitalWrite(trigPin, HIGH);
