@@ -28,6 +28,7 @@ bool getDistance(float *distance){
 
 	duration = pulseIn(echoPin, HIGH);
 	*distance = ((duration/2) / (29.1))*(29/33.57);//TODO Clean const (and/or calibrate)
+	*distance = 0.15918*(*distance)+1.9013; // correction erreur
 
 	if(*distance > 200 || *distance < 0)//Check distance is possible
 		return false;
