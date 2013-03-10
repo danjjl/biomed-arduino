@@ -2,6 +2,7 @@
 #define SIZE_H
 
 #include "global.h"
+#include "EEPROM.h"
 
 #define SIZE_FLOOR_DIST 200
 #define SIZE_SENSOR_HEIGHT

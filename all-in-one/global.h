@@ -9,11 +9,11 @@
 extern LiquidCrystal lcd;
 
 #define TSIC_SIGNAL_PIN 1
-#define TSCI_POWER_PIN 2
+#define TSIC_POWER_PIN 2
 
-#define WEIGHT_SENSOR 3
+#define WEIGHT_SENSOR 5
 
 #define SIZE_ECHO 4
-#define SIZE_TRIG 5
+#define SIZE_TRIG 3
 
 #endif

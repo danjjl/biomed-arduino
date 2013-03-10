@@ -7,6 +7,9 @@
 #include "temperature.h"
 #include "weight.h"
 
+//#include "Wire.h"
+#include "DS1307.h"
+
 // define some values used by the panel and buttons
 #define BTN_RIGHT 0
 #define BTN_UP 1

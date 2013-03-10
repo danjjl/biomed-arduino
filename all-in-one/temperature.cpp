@@ -69,7 +69,8 @@ float getTemperature(){
 
 	celsius = ( (float)temp_Temperature / 2047 * 7000) - 1000;// conversion equation from TSic's data sheet
 
-	if(!ok){
+	if(!ok || celsius <= 35 || celsius >= 45){
+		celsius = 36.5;  
 		lcd.clear();
 		lcd.setCursor(0,0);
 		lcd.print("Erreur lecture");

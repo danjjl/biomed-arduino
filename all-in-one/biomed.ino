@@ -4,7 +4,16 @@ extern LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
 
 void setup(){
 	Serial.begin(9600);
-	lcd.begin(16, 2);// start the library
+	lcd.begin(16, 2);// start the lcd
+	//DS1307.begin();
+
+        pinMode(WEIGHT_SENSOR, INPUT);
+        
+        pinMode(TSIC_POWER_PIN, OUTPUT);
+	pinMode(TSIC_SIGNAL_PIN, INPUT);
+
+        pinMode(SIZE_TRIG, OUTPUT);
+	pinMode(SIZE_ECHO, INPUT);
 }
 
 void loop(){
@@ -20,10 +29,14 @@ void loop(){
 	lcd.print("Tout");
 	lcd.setCursor(3,1);
 	lcd.blink();
+delay(2000);
 
 	do{
-		if(Serial.read() == 911)
+		if(Serial.available() && Serial.read() == 's'){
 			sync();
+			break;
+		}
+              
 
 		lcdKey = read_LCD_buttons(lcdKey); // read the input
 
@@ -39,6 +52,7 @@ void loop(){
 				cursor = BTN_LEFT;
 				break;
 			case BTN_SELECT:
+				lcd.noBlink();
 				if(cursor == BTN_LEFT)
 					getBmi();
 				else
@@ -78,12 +92,12 @@ void getBmi(){
 	int taille = getSize();
 	int weight = getWeight();
 	float bmi = float(taille)/float(weight*weight);
-
 	lcd.clear();
 	lcd.setCursor(0,0);
 	lcd.print("BMI");
 	lcd.setCursor(0,1);
 	lcd.print(bmi);
+        delay(2000);
 }
 
 void tout(){
@@ -99,21 +113,43 @@ void tout(){
 void writeEeprom(byte utilisateur, byte taille, byte weight, float temperature, byte frequence)
 {
 	int address = 0;
+	int RTCValues[6];
 
 	while(address < 1000 && EEPROM.read(address) != 0)
 		address++;
-
-	if(address == 1000 || EEPROM.read(address + 5) == 0){
+	if(address == 1000 || EEPROM.read(address + 10) != 0){
 		lcd.clear();
 		lcd.setCursor(0,0);
 		lcd.print("Memoire pleine");
+		delay(2000);
 	}
 	else{
+//TODO REMOVE IN RELEASE(module not at home
+RTCValues[0] = 13;
+RTCValues[1] = 3;
+RTCValues[2] = 10;
+RTCValues[4] = 19;
+RTCValues[5] = 20;
+		Serial.println(utilisateur);
+		Serial.println(taille);//Il faut q'un check de bonne valeur ai été fait -> 0 pas une bonne valeur
+		Serial.println(weight);
+		Serial.println(byte((temperature - 35.0)*10));//sur pc ca à l'effet désiré mais faut tester
+		Serial.println(frequence);
+		Serial.println(RTCValues[0]);//Year: two-digit, from 00 to 99
+		Serial.println(RTCValues[1]);//Month: two-digit, from 01 to 12
+		Serial.println(RTCValues[2]);//Day of month, from 01 to 31
+		Serial.println(RTCValues[4]);//Hour: 24-hour format, from 0 to 23
+		Serial.println(RTCValues[5]);//Minute: from 0 to 59
 		EEPROM.write(address, utilisateur);
 		EEPROM.write(address + 1, taille);//Il faut q'un check de bonne valeur ai été fait -> 0 pas une bonne valeur
 		EEPROM.write(address + 2, weight);
 		EEPROM.write(address + 3, byte((temperature - 35.0)*10));//sur pc ca à l'effet désiré mais faut tester
 		EEPROM.write(address + 4, frequence);
+		EEPROM.write(address + 5, RTCValues[0]);//Year: two-digit, from 00 to 99
+		EEPROM.write(address + 6, RTCValues[1]);//Month: two-digit, from 01 to 12
+		EEPROM.write(address + 7, RTCValues[2]);//Day of month, from 01 to 31
+		EEPROM.write(address + 8, RTCValues[4]);//Hour: 24-hour format, from 0 to 23
+		EEPROM.write(address + 9, RTCValues[5]);//Minute: from 0 to 59
 	}
 }
 
@@ -147,6 +183,7 @@ int selectUser(){
 	printUsers(0, numUsers, names);
 
 	do{
+  		lcdKey = BTN_NONE;
 		lcdKey = read_LCD_buttons(lcdKey); // read the input
 
 		switch (lcdKey){ // depending on which button was pushed, we perform an action

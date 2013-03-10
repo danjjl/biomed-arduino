@@ -4,8 +4,8 @@
 #include "global.h"
 
 #define WEIGHT_MESURES 10
-#define CONST_A 0.1461
-#define CONST_B 0.0155
+#define CONST_A 0.0253
+#define CONST_B 0.03825
 
 int getWeight();
 
