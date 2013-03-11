@@ -81,7 +81,7 @@ bool getTSicTemp(float *temperature){
 	temp_value2 >>= 1;// delete parity bit
 	uint16_t temp_Temperature = (temp_value1 << 8) | temp_value2;
 
-	celsius = ( (float)temp_Temperature / 2047 * 7000) - 1000;// conversion equation from TSic's data sheet
+	celsius = (float)temp_Temperature / 2047 * 70 - 10;// conversion equation from TSic's data sheet
 	*temperature = celsius; //return temperture in °C
 
 	return true;
