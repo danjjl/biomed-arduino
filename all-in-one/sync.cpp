@@ -10,13 +10,15 @@ void sync(){
 	lcd.setCursor(12,1);
 	lcd.print("...");
 
+	Serial.print('r');
+
 	//Read Values from memory
 	while(address < 1000 && value != 0) {
 		if(Serial.available()) {
 			Serial.read();
 			value = EEPROM.read(address);
 			EEPROM.write(address, 0);
-			Serial.print(value);
+			Serial.println(value);
 			delay(100);
 			address ++;
 		}
@@ -45,16 +47,18 @@ void sync(){
 	Serial.print('r');//Print ready
 	value = 1;
 	address = 999;
-	while(address >= 0 && value != 0){
+	while(address >= 0 && value != '0'){
 		if(Serial.available()) {
 			value = Serial.read();
-			EEPROM.write(address, value);
-			Serial.print('0');
-			delay(100);
-			address --;
+			if(value != '0'){
+				EEPROM.write(address, value);
+				Serial.print('o');
+				delay(100);
+				address --;
+			}
 		}
 	}
-	Serial.print('F');
+	Serial.print('f');
 	
 //TODO write Serial.read() and and erase users from db write users to end of eeprom
 }
