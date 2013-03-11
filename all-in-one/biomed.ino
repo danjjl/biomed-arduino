@@ -7,12 +7,12 @@ void setup(){
 	lcd.begin(16, 2);// start the lcd
 	//DS1307.begin();
 
-        pinMode(WEIGHT_SENSOR, INPUT);
-        
-        pinMode(TSIC_POWER_PIN, OUTPUT);
+	pinMode(WEIGHT_SENSOR, INPUT);
+	
+	pinMode(TSIC_POWER_PIN, OUTPUT);
 	pinMode(TSIC_SIGNAL_PIN, INPUT);
 
-        pinMode(SIZE_TRIG, OUTPUT);
+	pinMode(SIZE_TRIG, OUTPUT);
 	pinMode(SIZE_ECHO, INPUT);
 }
 
@@ -36,7 +36,6 @@ delay(2000);
 			sync();
 			break;
 		}
-              
 
 		lcdKey = read_LCD_buttons(lcdKey); // read the input
 
@@ -97,7 +96,7 @@ void getBmi(){
 	lcd.print("BMI");
 	lcd.setCursor(0,1);
 	lcd.print(bmi);
-        delay(2000);
+	delay(2000);
 }
 
 void tout(){
@@ -113,7 +112,7 @@ void tout(){
 void writeEeprom(byte utilisateur, byte taille, byte weight, float temperature, byte frequence)
 {
 	int address = 0;
-	int RTCValues[6];
+	int RTCValues[7];
 
 	while(address < 1000 && EEPROM.read(address) != 0)
 		address++;
@@ -162,12 +161,14 @@ int selectUser(){
 	int cursor = 0;
 
 	//Sauve les utilsateurs dans un tableau
-	for(int i=999; i>=6 && value!=0; i-=6){
+	for(int i=999; i>=6 && value!=0; i-=7){
 		value = EEPROM.read(i);
 		if(value != 0){
 			id[numUsers] = value;
+Serial.println(id[numUsers]);
 			for(int j=0; j<6; j++)
 				names[numUsers][j] = EEPROM.read(i-j-1);
+Serial.println(names[numUsers]);
 			numUsers++;
 		}
 	}
@@ -183,7 +184,7 @@ int selectUser(){
 	printUsers(0, numUsers, names);
 
 	do{
-  		lcdKey = BTN_NONE;
+		lcdKey = BTN_NONE;
 		lcdKey = read_LCD_buttons(lcdKey); // read the input
 
 		switch (lcdKey){ // depending on which button was pushed, we perform an action
@@ -211,7 +212,7 @@ void printUsers(int user, int numUsers, char names[MAX_USERS][6]){
 		lcd.print(names[(user+j) % numUsers][0]);
 		lcd.print(" ");
 		for(int i=1; i<6; i++)
-			lcd.print(names[user][i]);
+			lcd.print(names[(user+j) % numUsers][i]);
 		if(j==0)
 			lcd.blink();
 	}
