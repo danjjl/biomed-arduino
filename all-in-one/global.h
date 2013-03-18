@@ -8,12 +8,14 @@
 // Pin 10 communique avec la LCD. Analog pin 0 lit les boutons.
 extern LiquidCrystal lcd;
 
-#define TSIC_SIGNAL_PIN 1
-#define TSIC_POWER_PIN 2
+#define TSIC_SIGNAL_PIN 0 //digital
+#define TSIC_POWER_PIN 2 //digital
 
-#define WEIGHT_SENSOR 1
+#define WEIGHT_POWER 1 //digital
+#define WEIGHT_SENSOR 1 //analog
 
-#define SIZE_ECHO 12
-#define SIZE_TRIG 13
+#define SIZE_POWER 11 //digital
+#define SIZE_ECHO 12 //digital
+#define SIZE_TRIG 3 //digital
 
 #endif

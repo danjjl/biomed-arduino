@@ -4,9 +4,8 @@
 #include "global.h"
 #include "EEPROM.h"
 
-#define SIZE_FLOOR_DIST 233
-#define SIZE_SENSOR_HEIGHT
-#define SIZE_MESURES 10
+#define SIZE_FLOOR_DIST 233.0
+#define SIZE_MESURES 1
 
 float getDuration();
 int getSize();

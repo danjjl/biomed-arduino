@@ -7,10 +7,12 @@ void setup(){
 	lcd.begin(16, 2);// start the lcd
 	//DS1307.begin();
 
+	pinMode(WEIGHT_POWER, OUTPUT);
 
 	pinMode(TSIC_POWER_PIN, OUTPUT);
 	pinMode(TSIC_SIGNAL_PIN, INPUT);
 
+	pinMode(SIZE_POWER, OUTPUT);
 	pinMode(SIZE_TRIG, OUTPUT);
 	pinMode(SIZE_ECHO, INPUT);
 }
@@ -18,6 +20,7 @@ void setup(){
 void loop(){
 	int cursor = BTN_LEFT;
 	int lcdKey = BTN_NONE;
+int user;
 
 	lcd.clear();
 	lcd.setCursor(0,0);
@@ -54,11 +57,13 @@ delay(2000);
 				if(cursor == BTN_LEFT)
 					getBmi();
 				else
-					tout();
+					user = selectUser();
+					//tout();
 				cursor = BTN_SELECT;
 				break;
 		}
 	}while(cursor != BTN_SELECT);
+Serial.println(user);
 }
 
 // select the pins used on the LCD panel
@@ -68,19 +73,18 @@ delay(2000);
 // read the buttons
 int read_LCD_buttons(int currentKey){
 	int inputKey = analogRead(0);// read the value from the sensor 
-
 // button possible values: 0, 144, 329, 504, 741 (approx : +-50)
-	if (inputKey > 1000)
+	if (inputKey >= 760)
 		return currentKey; // We make this the 1st option for speed reasons since it will be the most likely result
-	else if (inputKey < 50)
+	else if (inputKey < 30)
 		return BTN_RIGHT;
-	else if (inputKey < 195)
+	else if (inputKey < 150)
 		return BTN_UP;
-	else if (inputKey < 380)
+	else if (inputKey < 360)
 		return BTN_DOWN;
-	else if (inputKey < 555)
+	else if (inputKey < 535)
 		return BTN_LEFT;
-	else if (inputKey < 790)
+	else if (inputKey < 760)
 		return BTN_SELECT;
 	else
 		return currentKey;
@@ -164,10 +168,8 @@ int selectUser(){
 		value = EEPROM.read(i);
 		if(value != 0){
 			id[numUsers] = value;
-Serial.println(id[numUsers]);
 			for(int j=0; j<6; j++)
 				names[numUsers][j] = EEPROM.read(i-j-1);
-Serial.println(names[numUsers]);
 			numUsers++;
 		}
 	}
@@ -181,11 +183,11 @@ Serial.println(names[numUsers]);
 	numUsers++;
 
 	printUsers(0, numUsers, names);
+        delay(500);
 
 	do{
 		lcdKey = BTN_NONE;
 		lcdKey = read_LCD_buttons(lcdKey); // read the input
-
 		switch (lcdKey){ // depending on which button was pushed, we perform an action
 			case BTN_UP:
 				cursor--;
@@ -200,6 +202,7 @@ Serial.println(names[numUsers]);
 				printUsers(cursor, numUsers, names);
 				break;
 		}
+		delay(100);
 	}while(lcdKey != BTN_SELECT);
 
 	return id[cursor];
@@ -212,7 +215,7 @@ void printUsers(int user, int numUsers, char names[MAX_USERS][6]){
 		lcd.print(" ");
 		for(int i=1; i<6; i++)
 			lcd.print(names[(user+j) % numUsers][i]);
-		if(j==0)
-			lcd.blink();
 	}
+	lcd.setCursor(7,0);
+	lcd.blink();
 }

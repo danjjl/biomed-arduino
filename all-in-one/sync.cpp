@@ -15,7 +15,7 @@ void sync(){
 		value = EEPROM.read(address);
 		EEPROM.write(address, 0);
 		Serial.write(value);
-		delay(100);
+		//delay(100);
 		address ++;
 	}
 
@@ -42,10 +42,10 @@ void sync(){
 
 	value = 1;
 	address = 999;
-	while(address >= 0 && value != '0'){
+	while(address >= 0 && value != byte(0)){
 		if(Serial.available() > 0){
 			value = Serial.read();
-			if(value != '0'){
+			if(value != byte(0)){
 				EEPROM.write(address, value);
 				address --;
 			}
