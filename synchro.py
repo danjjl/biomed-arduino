@@ -9,29 +9,12 @@ def readValue(ser):
     received = False
     while not received:
         try:
-            value = ser.readline()
-            #value = ord(value)
+            value = ser.read(1)
         except serial.SerialException:
             received = False
         else:
             received = True
-            ser.write('_'.encode("ascii"))
-            time.sleep(0.1)
     return value
-
-#Utilisé pour envoyer des données
-def sendValue(ser, send, stop):
-    sent = False
-    while not sent:
-        try:
-            ser.write(send.encode("ascii"))
-            value = ser.read()
-        except serial.SerialException:
-            sent = False
-        else:
-            if value == stop:
-                sent = True
-                time.sleep(0.1)
 
 def cleanMesures(mesures):
     while mesures.__contains__(''):
@@ -42,14 +25,16 @@ def cleanMesures(mesures):
 
 
 def synchro():
-    ser = serial.Serial('/dev/ttyUSB2', 9600, timeout = 0.5) #Initialize connection (FAUT MANUELLEMENT CHANGER LE NOM DU PORT)(CA VA PAS DANS LE PROGRAMME FINAL!)
+    ser = serial.Serial('/dev/ttyACM0', 9600, timeout = 0.5) #Initialize connection (FAUT MANUELLEMENT CHANGER LE NOM DU PORT)(CA VA PAS DANS LE PROGRAMME FINAL!)
     """Collecte données"""
-    value = 'g'
+    value = 1
     mesures = []
-    sendValue(ser, 's', 'r')#Start connection
-    while value != '0':
+    #Arduino va commencer à envoyer
+    ser.write(chr(255))
+    while value != 0:
         value = readValue(ser)
         mesures.append(value)
+        print value
 
         print value #TODO remove release DEBUG
 
@@ -70,9 +55,6 @@ def synchro():
         query.exec_("INSERT INTO mesures (utilisateur, poids, taille, temperature, frequence, time) mesures("+mesures[(i*10)]+", "+mesures[(i*10) + 2]+", "+mesures[(i*10)+1]+", "+str((float(mesures[(i*10)+3])/10)+ 35)+", "+mesures[(i*10)+4]+", DATETIME('20"+mesures[(i*10)+5]+"-"+mesures[(i*10)+6]+"-"+mesures[(i*10)+7]+" "+mesures[(i*10)+8]+":"+mesures[(i*10)+9]+":01'))")
 
     """Envois liste des utilisateurs"""
-    while value != 'r': #Attend que l'arduino confirme qu'il est pret
-        value = readValue(ser)
-
     query.exec_("SELECT id, nom, prenom FROM utilisateurs")
     while query.next():
 
@@ -83,12 +65,13 @@ def synchro():
         for i in range(len(firstName), 6):
             firstName += " "
 
-        sendValue(ser, str(curId), 'o')
-        sendValue(ser, str(lastName[0]), 'o')
+        print ser.write(chr(curId)) #TODO CHECK JUST 1 byte
+        ser.write(str(lastName[0]))
         for i in range(0, 6):
-             sendValue(ser, str(firstName[i]), 'o')
+             ser.write(str(firstName[i]))
+             print firstName[i]
 
-    sendValue(ser, '0', 'f') #Code de fin de transfert
+    ser.write('0') #Code de fin de transfert
 
 db = QtSql.QSqlDatabase.addDatabase('QSQLITE')
 db.setDatabaseName('biomed.sql')

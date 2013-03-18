@@ -7,8 +7,7 @@ void setup(){
 	lcd.begin(16, 2);// start the lcd
 	//DS1307.begin();
 
-	pinMode(WEIGHT_SENSOR, INPUT);
-	
+
 	pinMode(TSIC_POWER_PIN, OUTPUT);
 	pinMode(TSIC_SIGNAL_PIN, INPUT);
 
@@ -32,7 +31,7 @@ void loop(){
 delay(2000);
 
 	do{
-		if(Serial.available() && Serial.read() == 's'){
+		if(Serial.available() > 0 && Serial.read() == byte(255)){
 			sync();
 			break;
 		}

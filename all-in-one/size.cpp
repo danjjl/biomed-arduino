@@ -43,7 +43,7 @@ int getSize(){
 	//distance = ((duration/2) / (29.1))*(29/33.57); //TODO Clean const (and/or calibrate) PLUS UTILE
 	//distance += 0.15918*distance+1.9013; // correction erreur PAS SUR ENCORE UTILE
 Serial.print(taille);
-	if(taille <= 10.0 || taille > 200.0){ //Check distance is possible
+	if(false){ //Check distance is possible
 		taille = 170;
 		lcd.clear();
 		lcd.setCursor(0,0);

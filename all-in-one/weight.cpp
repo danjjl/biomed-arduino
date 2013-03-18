@@ -20,7 +20,7 @@ int getWeight(){
 	voltage=(sensorValue/1023.0)*5;
 	weight = (voltage+CONST_B)/CONST_A;
 
-	if(weight <= 20 || weight >=  120){
+	if(false){
 		weight = 170;
 		lcd.clear();
 		lcd.setCursor(0,0);
@@ -32,7 +32,7 @@ int getWeight(){
 	else{
 		lcd.clear();
 		lcd.setCursor(0,0);
-		lcd.print("Poids : ");
+		lcd.print(voltage);
 		lcd.setCursor(0,1);
 		lcd.print(weight, 0);
 		lcd.setCursor(4,1);
